@@ -13,11 +13,17 @@ from reportlab.pdfgen import canvas
 
 from users import models
 
+# View para criação de novos usuários
 class UserCreateView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminRole]
+    """
+    View para criar um novo usuário.
+    Apenas usuários com o papel 'administrativo' podem acessar essa rota.
+    """
 
+# View para retornar informações do usuário autenticado
 class UserMeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -25,31 +31,53 @@ class UserMeView(APIView):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data)
+    """
+    View para retornar os dados do usuário autenticado.
+    Permite que um usuário veja suas próprias informações.
+    """
 
-# ✅ Listar todos os usuários (somente administrativo)
+# Listar todos os usuários (somente administrativo)
 class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminRole]
+    """
+    View para listar todos os usuários cadastrados no sistema.
+    Somente usuários com o papel 'administrativo' podem acessar essa rota.
+    """
 
-# ✅ Atualizar role do usuário (somente administrativo)
+# Atualizar role do usuário (somente administrativo)
 class UserRoleUpdateView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRoleUpdateSerializer  
     permission_classes = [permissions.IsAuthenticated, IsAdminRole]
     lookup_field = 'pk'
+    """
+    View para atualizar o papel (role) de um usuário.
+    Apenas usuários com o papel 'administrativo' podem acessar essa rota.
+    """
 
+# View para criação de novos materiais
 class MaterialCreateView(generics.CreateAPIView):
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
     permission_classes = [IsAuthenticated, IsTecnicoRole]
+    """
+    View para criar um novo material.
+    Somente usuários com o papel 'tecnico' podem acessar essa rota.
+    """
 
+# View para listar todos os materiais
 class MaterialListView(generics.ListAPIView):
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
     permission_classes = [IsAuthenticated]
+    """
+    View para listar todos os materiais cadastrados.
+    Acesso liberado para qualquer usuário autenticado.
+    """
 
-
+# View para criação de etapas de processo
 class EtapaProcessoCreateView(generics.CreateAPIView):
     serializer_class = EtapaProcessoSerializer
     permission_classes = [IsAuthenticated, IsTecnicoRole]
@@ -57,7 +85,12 @@ class EtapaProcessoCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         # A criação já se encarrega de definir o status corretamente
         serializer.save()
+    """
+    View para criar uma nova etapa de processo para um material.
+    Somente usuários com o papel 'tecnico' podem acessar essa rota.
+    """
 
+# View para listar etapas de processo de um material específico
 class EtapasPorMaterialView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -87,13 +120,22 @@ class EtapasPorMaterialView(APIView):
             })
 
         return Response(data)
+    """
+    View para listar todas as etapas de processo associadas a um material específico.
+    Acesso liberado para qualquer usuário autenticado.
+    """
 
-
+# View para registrar falhas nas etapas de processo
 class FalhaCreateView(generics.CreateAPIView):
     queryset = Falha.objects.all()
     serializer_class = FalhaSerializer
     permission_classes = [IsAuthenticated, IsTecnicoRole]
+    """
+    View para registrar uma falha em uma etapa de processo.
+    Somente usuários com o papel 'tecnico' podem acessar essa rota.
+    """
 
+# View para obter rastreabilidade do processo de um material
 class RastreabilidadeView(APIView):
     permission_classes = [IsAuthenticated, IsEnfermagemRole]
 
@@ -117,7 +159,13 @@ class RastreabilidadeView(APIView):
                 'falhas': [{'etapa': f.etapa.etapa, 'descricao': f.descricao, 'data': f.data_ocorrencia} for f in falhas],
             })
         return Response(resultado)
-    
+    """
+    View para obter informações de rastreabilidade de um material.
+    Exibe a quantidade de processos e falhas associadas ao material.
+    Apenas usuários com o papel 'enfermagem' podem acessar.
+    """
+
+# View para exportar relatórios de falhas e processos
 class ExportRelatorioView(APIView):
     permission_classes = [IsAuthenticated, IsEnfermagemRole]
 
@@ -157,3 +205,8 @@ class ExportRelatorioView(APIView):
             return HttpResponse(buffer, content_type='application/pdf')
 
         return Response({"erro": "Formato inválido. Use 'pdf' ou 'xlsx'"}, status=400)
+    """
+    View para exportar um relatório de falhas associadas a materiais.
+    O relatório pode ser gerado nos formatos 'pdf' ou 'xlsx'.
+    Apenas usuários com o papel 'enfermagem' podem acessar.
+    """
