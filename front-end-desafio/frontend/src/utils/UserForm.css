@@ -1,0 +1,37 @@
+.user-form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 20px;
+  }
+  
+  .user-form input,
+  .user-form select,
+  .user-form button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+  
+  .user-form button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .user-form button:hover {
+    background-color: #2563eb;
+  }
+  
+  .user-form p {
+    color: green;
+    text-align: center;
+  }
+  

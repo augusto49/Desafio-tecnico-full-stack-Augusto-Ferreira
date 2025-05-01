@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  backend:
+    build: ./Desafio-tecnico-full-stack-Augusto-Ferreira
+    container_name: backend
+    volumes:
+      - ./Desafio-tecnico-full-stack-Augusto-Ferreira:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=nome_do_projeto.settings 
+
+  frontend:
+    build: ./front-end-desafio
+    container_name: frontend
+    volumes:
+      - ./front-end-desafio:/app
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+
+  db:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: cme_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
